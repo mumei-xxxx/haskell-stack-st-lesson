@@ -27,8 +27,21 @@ listToSTUArray vals = do
         writeArray myArray i val
     return myArray
 
+-- listToUArray :: [Int] -> UArray Int Int
+-- listToUArray vals = runSTUArray $ listToSTUArray vals
+{-
+ghci> listToUArray [1,2,3]
+array (0,2) [(0,1),(1,2),(2,3)]
+-}
+
 listToUArray :: [Int] -> UArray Int Int
-listToUArray vals = runSTUArray $ listToSTUArray vals
+listToUArray vals = runSTUArray $ do
+    let end =  length vals - 1
+    myArray <- newArray (0,end) 0
+    forM_ [0 .. end] $ \i -> do
+        let val = vals !! i
+        writeArray myArray i val
+    return myArray
 
 main :: IO ()
 main = someFunc
