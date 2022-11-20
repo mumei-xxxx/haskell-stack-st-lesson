@@ -5,6 +5,7 @@ import Data.Array.Unboxed
 import Data.Array.ST
 import Control.Monad
 import Control.Monad.ST
+import Debug.Trace (trace,traceShowId)
 
 zeroIndexArray :: UArray Int Bool
 zeroIndexArray = array (0,9) [(3,True)]
@@ -54,7 +55,7 @@ myData' = listToUArray [7,6,4,8,10,2]
 bubbleSort :: UArray Int Int -> UArray Int Int
 bubbleSort myArray = runSTUArray $ do
     stArray <- thaw myArray
-    let end = (snd . bounds) myArray
+    let end = traceShowId((snd . bounds) myArray)
     forM_ [1 .. end] $ \i -> do
         forM_ [0 .. (end - i)] $ \j -> do
             val <- readArray stArray j
@@ -64,6 +65,15 @@ bubbleSort myArray = runSTUArray $ do
                 writeArray stArray j nextVal
                 writeArray stArray (j + 1) val
     return stArray
+{-
+ghci> bounds myData'
+(0,5) 配列の上限と下限
+ghci> myData'
+array (0,5) [(0,7),(1,6),(2,4),(3,8),(4,10),(5,2)]
+ghci> bubbleSort myData'
+array 5
+(0,5) [(0,2),(1,4),(2,6),(3,7),(4,8),(5,10)]
+-}
 
 main :: IO ()
 main = someFunc
