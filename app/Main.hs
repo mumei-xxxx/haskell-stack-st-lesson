@@ -43,5 +43,27 @@ listToUArray vals = runSTUArray $ do
         writeArray myArray i val
     return myArray
 
+{-
+ghci> listToUArray [1,2,3]
+array (0,2) [(0,1),(1,2),(2,3)]
+-}
+
+myData' :: UArray Int Int
+myData' = listToUArray [7,6,4,8,10,2]
+
+bubbleSort :: UArray Int Int -> UArray Int Int
+bubbleSort myArray = runSTUArray $ do
+    stArray <- thaw myArray
+    let end = (snd . bounds) myArray
+    forM_ [1 .. end] $ \i -> do
+        forM_ [0 .. (end - i)] $ \j -> do
+            val <- readArray stArray j
+            nextVal <- readArray stArray (j + 1)
+            let outOfOrder = val > nextVal
+            when outOfOrder $ do
+                writeArray stArray j nextVal
+                writeArray stArray (j + 1) val
+    return stArray
+
 main :: IO ()
 main = someFunc
